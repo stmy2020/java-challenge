@@ -1,18 +1,51 @@
 package jp.co.axa.apidemo.services;
 
-import jp.co.axa.apidemo.entities.Employee;
+import jp.co.axa.apidemo.controllers.dto.request.EmployeeRequest;
+import jp.co.axa.apidemo.domain.model.Employee;
+import lombok.NonNull;
 
 import java.util.List;
 
+/**
+ *
+ */
 public interface EmployeeService {
 
-    public List<Employee> retrieveEmployees();
+    /**
+     * Retrieves a list of all employees.
+     *
+     * @return A list of Employee objects
+     */
+    List<Employee> retrieveEmployees();
 
-    public Employee getEmployee(Long employeeId);
+    /**
+     * Retrieves an employee by id.
+     *
+     * @param employeeId The id of the employee to retrieve.
+     * @return A ResponseEntity containing the Employee object and an HTTP status code.
+     */
+    Employee getEmployee(@NonNull final Long employeeId);
 
-    public void saveEmployee(Employee employee);
+    /**
+     * Add a new employee.
+     *
+     * @param employee {@link Employee}
+     */
+    void saveEmployee(@NonNull final Employee employee);
 
-    public void deleteEmployee(Long employeeId);
+    /**
+     * Delete an employee by id.
+     *
+     * @param employeeId The id of the employee to delete.
+     */
+    void deleteEmployee(@NonNull final Long employeeId);
 
-    public void updateEmployee(Employee employee);
+    /**
+     * Update existing employee information.
+     *
+     * @param employee {@link Employee}
+     */
+    void updateEmployee(
+            @NonNull final Employee employee
+    );
 }

@@ -1,53 +1,112 @@
 package jp.co.axa.apidemo.controllers;
 
-import jp.co.axa.apidemo.entities.Employee;
+import jp.co.axa.apidemo.controllers.dto.request.EmployeeRequest;
+import jp.co.axa.apidemo.controllers.dto.response.EmployeeResponse;
+import jp.co.axa.apidemo.domain.exceptions.ValueConflictException;
+import jp.co.axa.apidemo.domain.model.Employee;
 import jp.co.axa.apidemo.services.EmployeeService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1")
+@RequiredArgsConstructor
+@Validated
 public class EmployeeController {
 
-    @Autowired
-    private EmployeeService employeeService;
+    private final EmployeeService employeeService;
 
-    public void setEmployeeService(EmployeeService employeeService) {
-        this.employeeService = employeeService;
-    }
-
+    /**
+     *  Retrieves a list of all employees.
+     *
+     *  @return  A list of Employee objects
+     */
     @GetMapping("/employees")
-    public List<Employee> getEmployees() {
-        List<Employee> employees = employeeService.retrieveEmployees();
-        return employees;
+    @ResponseStatus(HttpStatus.OK)
+    public List<EmployeeResponse> getEmployees() {
+        return employeeService.retrieveEmployees().stream()
+                .map(EmployeeResponse::new)
+                .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves an employee by id.
+     *
+     * @param employeeId The id of the employee to retrieve.
+     * @return A ResponseEntity containing the Employee object and an HTTP status code.
+     */
     @GetMapping("/employees/{employeeId}")
-    public Employee getEmployee(@PathVariable(name="employeeId")Long employeeId) {
-        return employeeService.getEmployee(employeeId);
+    @ResponseStatus(HttpStatus.OK)
+    public EmployeeResponse getEmployee(
+            @PathVariable(name="employeeId") final Long employeeId
+    ) {
+        return new EmployeeResponse(employeeService.getEmployee(employeeId));
     }
 
+    /**
+     * Add a new employee.
+     *
+     * @param employeeRequest {@link EmployeeRequest}
+     */
     @PostMapping("/employees")
-    public void saveEmployee(Employee employee){
+    @ResponseStatus(HttpStatus.CREATED)
+    public void saveEmployee(@RequestBody @Valid final EmployeeRequest employeeRequest) {
+
+        final Employee employee = new Employee(
+                employeeRequest.getId(),
+                employeeRequest.getName(),
+                employeeRequest.getSalary(),
+                employeeRequest.getDepartment()
+        );
+
         employeeService.saveEmployee(employee);
-        System.out.println("Employee Saved Successfully");
     }
 
+    /**
+     * Delete an employee by id.
+     *
+     * @param employeeId The id of the employee to delete.
+     */
     @DeleteMapping("/employees/{employeeId}")
-    public void deleteEmployee(@PathVariable(name="employeeId")Long employeeId){
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteEmployee(
+            @PathVariable(name="employeeId") final Long employeeId
+    ) {
         employeeService.deleteEmployee(employeeId);
-        System.out.println("Employee Deleted Successfully");
     }
 
+    /**
+     * Update existing employee information.
+     *
+     * @param employeeRequest {@link EmployeeRequest}
+     * @param employeeId The id of the employee to update.
+     */
     @PutMapping("/employees/{employeeId}")
-    public void updateEmployee(@RequestBody Employee employee,
-                               @PathVariable(name="employeeId")Long employeeId){
-        Employee emp = employeeService.getEmployee(employeeId);
-        if(emp != null){
-            employeeService.updateEmployee(employee);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateEmployee(
+            @RequestBody @Valid final EmployeeRequest employeeRequest,
+            @PathVariable(name="employeeId") final Long employeeId
+    ) {
+
+        if (!employeeRequest.getId().equals(employeeId)) {
+            throw new ValueConflictException("EmployeeId in path variable and request body are not the same. " +
+                    "Path variable id: " + employeeId + ". Request body id: " + employeeRequest.getId());
         }
+
+        final Employee employee = new Employee(
+                employeeRequest.getId(),
+                employeeRequest.getName(),
+                employeeRequest.getSalary(),
+                employeeRequest.getDepartment()
+        );
+
+        employeeService.updateEmployee(employee);
 
     }
 
