@@ -77,7 +77,7 @@ Please let us know more about your Java experience in a few sentences. For examp
   - add constructor in Employee.java
   - add several Exception classes to handle the error
 - repositories
-  - add custom methods to get / delete / find existence by "employeeId" but not primary key "id".
+  - add custom methods to get / delete / update / find existence by "employeeId" but not primary key "id".
 - test
   - modify the dependencies in pom.xml to use junit5
   - add success unit test cases for EmployeeController.java and EmployeeService.java
