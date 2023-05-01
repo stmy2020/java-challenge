@@ -60,15 +60,18 @@ Please let us know more about your Java experience in a few sentences. For examp
     - Using @Autowired directly in classes creates a tighter coupling and decreases testability
   - set response status by using @ResponseStatus
   - add javadoc
-  - add dto for the request body and response rather then using Employee object directly
+  - add dto for the request body and response rather than using Employee object directly
   - move System.out calls to service layer and replace with log.info to improve the logging
   - add ApiExceptionHandler to handle custom exceptions
+  - use @Valid to validate the field in request body
+  - add "final" to parameters 
 - services: 
-  -  use @RequiredArgsConstructor to replace @Autowired to not use field injection
+  - use @RequiredArgsConstructor to replace @Autowired to not use field injection
     - Using @Autowired directly in classes creates a tighter coupling and decreases testability
   - add javadoc
   - add log to keep the information
   - add @Override annotation in EmployeeServiceImpl.java
+  - add "final" to parameters
 - domain:
   - renamed entities folder to domain/model
   - add a new "employeeId" unique field in Employee.java
@@ -147,7 +150,7 @@ The following shows how to access each endpoint, and also shows the results in d
     - result:
       - {"message":"Employee is not found. EmployeeId : 6"}
 - put /api/v1/employees/:employee_id
-  - If employee id exists, the data will be deleted correctly
+  - If employee id exists, the data will be updated correctly
     - command:
       - curl -X POST -H "Content-Type: application/json" -d '{"id": 6, "name": "test6", "salary": 6000, "department": "dep6"}' http://localhost:8080/api/v1/employees
       - curl http://localhost:8080/api/v1/employees/6
